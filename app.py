@@ -30,10 +30,41 @@ def callback():
         abort(400)
     return 'OK'
 
+def Reply(event):
+    return line_bot_api.reply_message(event.reply_token,
+        TemplateSendMessage(
+            alt_text='替代文字',
+            template=ButtonsTemplate(
+                thumbnail_image_url='圖案路徑.jpg',
+                title='標題',
+                text='內容',
+                actions=[
+                    PostbackTemplateAction(
+                    label='按鈕文字',
+                    text='發話文字',
+                    data='夾帶資料'
+                    ),
+                    MessageTemplateAction(
+                        label='按鈕文字',
+                        text='發話文字'
+                    ),
+                    URITemplateAction(
+                        label='按鈕文字',
+                        uri='網址'
+                    )
+                ]
+            )
+        )
+    )
+
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text = event.message.text))
+    try:
+        Reply(event)
+    except Exception as e:
+        line_bot_api.reply_message(event.reply_token, 
+            TextSendMessage(text=str(e)))
 
 import os
 if __name__ == "__main__":
